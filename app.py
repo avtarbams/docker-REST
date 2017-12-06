@@ -1,5 +1,6 @@
-from flask import Flask,jsonify, render_template
+from flask import Flask,jsonify, render_template, request
 import json
+
 
 app = Flask(__name__)
 jData = json.loads(open('./marvel.json').read())
@@ -7,11 +8,15 @@ data=jData["MarvelMovies"]
 
 @app.route('/')
 def marvel_main():
-    return render_template("myadmin.html")
+    return render_template("index.html")
 
 @app.route('/getmovies/')
 def marvel_all():
-    return jsonify(data)
+    myList=[]
+    for element in data:
+        myList.append(element)
+    result = jsonify(myList)
+    return render_template("index.html",items=myList)
 
 @app.route('/getmovies/<string:Year>/')
 def marvel(Year=''):
@@ -19,7 +24,8 @@ def marvel(Year=''):
     for element in data:
         if element["Year"] == Year:
             myList.append(element)
-    return jsonify(myList)
+    result = jsonify(myList)
+    return render_template("index.html",items=myList)
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
